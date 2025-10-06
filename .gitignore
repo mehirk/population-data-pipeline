@@ -210,5 +210,4 @@ __pycache__/
 .DS_Store
 venv/
 *.pyc
-data/processed/
 
