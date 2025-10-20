@@ -37,8 +37,8 @@ def load(df: pd.DataFrame, output_path: Path) -> None:
 
 def main():
     BASE_DIR = Path(os.getcwd()).resolve().parent if "notebooks" in os.getcwd() else Path(os.getcwd()).resolve()
-    raw_path = BASE_DIR / "population-data-pipeline" / "data" /"raw" / "data.csv"
-    processed_path = BASE_DIR / "population-data-pipeline" /"data" / "processed" / "population_clean_manual.csv"
+    raw_path = Path("/opt/airflow/dags/data/raw/data.csv")
+    processed_path = Path("/opt/airflow/dags/data/processed/population_clean.csv")
 
     # run the ETL process
     df_raw = extract(raw_path)

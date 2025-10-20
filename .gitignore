@@ -206,8 +206,11 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-__pycache__/
+# Project-specific artifacts
+data/processed/
+data/raw/API_SP.POP.TOTL_DS2_en_csv_v2_1211283/
+airflow/logs/
+airflow/dags/data/processed/
+airflow/dags/data/raw/API_SP.POP.TOTL_DS2_en_csv_v2_1211283/
+postgres-db-volume/
 .DS_Store
-venv/
-*.pyc
-
