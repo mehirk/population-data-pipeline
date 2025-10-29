@@ -1,0 +1,19 @@
+<div class="container">
+  <h2>World Population Data</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Country</th>
+        <th>Code</th>
+        <th>Population</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of populationData">
+        <td>{{ item.country }}</td>
+        <td>{{ item.country_code }}</td>
+        <td>{{ item.population | number }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
