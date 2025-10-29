@@ -19,7 +19,7 @@ app = FastAPI(title="Population API", version="1.0.0")
 # Allow the Angular frontend to call the API during development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],  # Local Angular dev server
+    allow_origins=["http://localhost:4200", "https://population-dashboard-eta.vercel.app"],  # Local Angular dev server
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
