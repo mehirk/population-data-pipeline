@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "population-dashboard/angular.json",
+      "use": "@vercel/angular"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "population-dashboard/dist/population-dashboard/index.html"
+    }
+  ]
+}
