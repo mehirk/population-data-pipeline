@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class DataService {
-  private apiUrl = 'http://localhost:8000/population'; // Endpoint served by the FastAPI backend
+  private apiUrl = 'https://population-data-pipeline.onrender.com/population'; // Endpoint served by the FastAPI backend on Render
 
   constructor(private http: HttpClient) {}
 

@@ -8,6 +8,7 @@ import pandas as pd
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from botocore.exceptions import ClientError
+from fastapi.responses import JSONResponse
 
 # Configuration
 BUCKET = os.getenv("S3_BUCKET", "population-data-pipeline-mehir")
@@ -47,6 +48,10 @@ def read_csv_from_s3(client, key):
     response = client.get_object(Bucket=BUCKET, Key=key)
     body = response["Body"].read().decode("utf-8")
     return pd.read_csv(StringIO(body))
+
+@app.get("/")
+def home():
+    return JSONResponse({"message": "Population API is live on Render!"})
 
 # Lightweight health check endpoint
 @app.get("/health")
