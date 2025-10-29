@@ -9,7 +9,7 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "population-dashboard/dist/population-dashboard/index.html"
+      "dest": "population-dashboard/dist/population-dashboard/browser/index.html"
     }
   ]
 }
