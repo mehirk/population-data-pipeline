@@ -20,6 +20,9 @@ x-airflow-common: &airflow-common
     - postgres
 
 services:
+  # --------------------------
+  # PostgreSQL database
+  # --------------------------
   postgres:
     image: postgres:13
     environment:
@@ -29,10 +32,16 @@ services:
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
 
+  # --------------------------
+  # Airflow initialization
+  # --------------------------
   airflow-init:
     <<: *airflow-common
     command: bash -c "airflow db init && airflow users create --username admin --firstname Admin --lastname User --role Admin --email admin@example.com --password admin"
 
+  # --------------------------
+  # Airflow webserver
+  # --------------------------
   webserver:
     <<: *airflow-common
     command: bash -c "airflow db migrate && airflow webserver"
@@ -42,6 +51,9 @@ services:
       - postgres
       - airflow-init
 
+  # --------------------------
+  # Airflow scheduler
+  # --------------------------
   scheduler:
     <<: *airflow-common
     command: bash -c "airflow db migrate && airflow scheduler"
@@ -49,5 +61,23 @@ services:
       - postgres
       - airflow-init
 
+  # --------------------------
+  # FastAPI backend
+  # --------------------------
+  api:
+    build:
+      context: ./api                # path to your api folder
+    container_name: population-api
+    env_file:
+      - .env                        # same .env that Airflow uses
+    ports:
+      - "8000:8000"                 # backend runs on http://localhost:8000
+    depends_on:
+      - webserver                   # start after Airflow webserver
+    restart: unless-stopped         # auto-restart if it crashes
+
+# --------------------------
+# Docker volumes
+# --------------------------
 volumes:
   postgres-db-volume:
