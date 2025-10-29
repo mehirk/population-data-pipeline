@@ -1,4 +1,4 @@
-# api/app.py
+# FastAPI entry point for population data
 import os
 from datetime import datetime, timezone
 from io import StringIO
@@ -9,22 +9,22 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from botocore.exceptions import ClientError
 
-# ---- CONFIG ----
+# Configuration
 BUCKET = os.getenv("S3_BUCKET", "population-data-pipeline-mehir")
 REGION = os.getenv("AWS_REGION", "ca-central-1")
 
 app = FastAPI(title="Population API", version="1.0.0")
 
-# Allow frontend (Angular) to talk to backend
+# Allow the Angular frontend to call the API during development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],  # Angular dev server
+    allow_origins=["http://localhost:4200"],  # Local Angular dev server
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Create an S3 client
+# Helper to construct an S3 client
 def s3_client():
     return boto3.client(
         "s3",
@@ -33,7 +33,7 @@ def s3_client():
         aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
     )
 
-# Find latest uploaded file in the S3 bucket
+# Locate the newest object in the S3 bucket
 def latest_key(client):
     objects = client.list_objects_v2(Bucket=BUCKET)
     all_files = objects.get("Contents", [])
@@ -42,18 +42,18 @@ def latest_key(client):
     latest = max(all_files, key=lambda x: x["LastModified"])
     return latest["Key"]
 
-# Read a CSV from S3
+# Download and parse a CSV from S3
 def read_csv_from_s3(client, key):
     response = client.get_object(Bucket=BUCKET, Key=key)
     body = response["Body"].read().decode("utf-8")
     return pd.read_csv(StringIO(body))
 
-# Health check route
+# Lightweight health check endpoint
 @app.get("/health")
 def health():
     return {"status": "ok", "time": datetime.now(timezone.utc).isoformat()}
 
-# Main route — gets your cleaned population data
+# Primary endpoint serving the processed population dataset
 @app.get("/population")
 def population():
     client = s3_client()
@@ -66,7 +66,7 @@ def population():
         "rows": df.to_dict(orient="records"),
     }
 
-# Get top N populated countries
+# Return the top N countries by population
 @app.get("/population/top/{n}")
 def top_n(n: int = 10):
     client = s3_client()
