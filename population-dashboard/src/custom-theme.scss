@@ -1,14 +1,20 @@
 
-// Pull in Angular Material theming helpers.
-// The mixin below wires up Material 3 tokens for the app.
-// Docs: https://material.angular.dev/guide/theming
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// components according to the Material 3 design spec.
+// Learn more about theming and how to use it for your application's
+// custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
+
+$primary: mat.$azure-palette;
+$tertiary: mat.$blue-palette;
 
 html {
   @include mat.theme((
     color: (
-      primary: mat.$azure-palette,
-      tertiary: mat.$blue-palette,
+      theme-type: light,
+      primary: $primary,
+      tertiary: $tertiary,
     ),
     typography: Roboto,
     density: 0,
@@ -16,15 +22,25 @@ html {
 }
 
 body {
-  // Start in light mode; switch to `dark` or `light dark` if you prefer.
   color-scheme: light;
-
-  // Use Material system tokens for background, text, and typography.
-  // Reference: https://material.angular.dev/guide/system-variables
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
-
-  // Drop the browser's default body margin.
   margin: 0;
+  transition: background-color 150ms linear, color 150ms linear;
+}
+
+body.dark-mode {
+  @include mat.theme((
+    color: (
+      theme-type: dark,
+      primary: $primary,
+      tertiary: $tertiary,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+  color-scheme: dark;
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
 }

@@ -214,3 +214,22 @@ airflow/dags/data/processed/
 airflow/dags/data/raw/API_SP.POP.TOTL_DS2_en_csv_v2_1211283/
 postgres-db-volume/
 .DS_Store
+
+# Node / Angular artifacts
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+population-dashboard/node_modules/
+population-dashboard/dist/
+population-dashboard/.angular/
+population-dashboard/.vercel/
+population-dashboard/.cache/
+population-dashboard/.sass-cache/
+population-dashboard/tmp/
+population-dashboard/coverage/
+population-dashboard/.eslintcache
+population-dashboard/.nx/

@@ -1,19 +1,136 @@
 <div class="container">
-  <h2>World Population Data</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Country</th>
-        <th>Code</th>
-        <th>Population</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of populationData">
-        <td>{{ item.country }}</td>
-        <td>{{ item.country_code }}</td>
-        <td>{{ item.population | number }}</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="header">
+    <div>
+      <h2>🌍 Population Dashboard</h2>
+      <p class="subtitle">Interactive snapshot of the latest World Bank population figures</p>
+    </div>
+    <div class="header-actions">
+      <mat-slide-toggle
+        color="primary"
+        [(ngModel)]="darkMode"
+        (change)="onThemeToggle($event.checked)">
+        Dark mode
+      </mat-slide-toggle>
+      <mat-button-toggle-group
+        name="density"
+        [(ngModel)]="tableDensity"
+        (change)="onDensityChange($event.value)"
+        appearance="legacy">
+        <mat-button-toggle value="comfortable">Comfort</mat-button-toggle>
+        <mat-button-toggle value="compact">Compact</mat-button-toggle>
+      </mat-button-toggle-group>
+      <button mat-raised-button color="primary" (click)="refresh()" [disabled]="loading">
+        Refresh Data
+      </button>
+    </div>
+  </div>
+
+  <div class="state" *ngIf="loading">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>Loading the latest population data…</p>
+  </div>
+
+  <mat-card class="error-card" *ngIf="!loading && error">
+    <p>{{ error }}</p>
+    <button mat-stroked-button color="primary" (click)="refresh()">Try again</button>
+  </mat-card>
+
+  <ng-container *ngIf="!loading && !error">
+    <div class="meta-grid">
+      <mat-card>
+        <h3>Total Countries</h3>
+        <p class="metric">{{ totalCountries | number }}</p>
+      </mat-card>
+      <mat-card>
+        <h3>Last Refreshed</h3>
+        <p class="metric">{{ lastRefreshed | date: 'medium' }}</p>
+      </mat-card>
+      <mat-card>
+        <h3>Dataset Key</h3>
+        <p class="metric meta-key">{{ meta.key || 'N/A' }}</p>
+      </mat-card>
+    </div>
+
+    <div class="filters">
+      <mat-form-field appearance="outline">
+        <mat-label>Search Country</mat-label>
+        <input
+          matInput
+          [(ngModel)]="searchText"
+          (ngModelChange)="applyFilters()"
+          placeholder="e.g., Canada" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Region</mat-label>
+        <mat-select [(ngModel)]="selectedRegion" (selectionChange)="onRegionChange($event.value)">
+          <mat-option *ngFor="let region of regionOptions" [value]="region">
+            {{ region }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="slider-field">
+        <div class="slider-label">
+          <span>Min Population</span>
+          <strong>{{ minPopulation | number }}</strong>
+        </div>
+        <mat-slider
+          [min]="0"
+          [max]="maxPopulation || 1"
+          [step]="500000">
+          <input
+            matSliderThumb
+            [(ngModel)]="minPopulation"
+            name="minPopulation"
+            (ngModelChange)="onPopulationChange()" />
+        </mat-slider>
+      </div>
+    </div>
+
+    <div class="table-wrapper" [ngClass]="tableDensityClass">
+      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+        <ng-container matColumnDef="country">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Country</th>
+          <td mat-cell *matCellDef="let row">
+            <div class="country-cell">
+              <span class="country-name">{{ row.country }}</span>
+              <span class="region-chip" *ngIf="row.region">{{ row.region }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="population">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Population</th>
+          <td mat-cell *matCellDef="let row">{{ row.population | number }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <mat-paginator
+        [pageSize]="10"
+        [pageSizeOptions]="[10, 25, 50]"
+        showFirstLastButtons>
+      </mat-paginator>
+    </div>
+
+    <div class="chart-grid">
+      <mat-card>
+        <h3>📊 Top 10 Countries by Population</h3>
+        <canvas baseChart [data]="barChartData" [options]="barChartOptions" chartType="bar"></canvas>
+      </mat-card>
+
+      <mat-card>
+        <h3>📈 Top 10 Trend Line</h3>
+        <canvas baseChart [data]="lineChartData" [options]="lineChartOptions" chartType="line"></canvas>
+      </mat-card>
+
+      <mat-card>
+        <h3>🥧 Top 5 Share</h3>
+        <canvas baseChart [data]="pieChartData" [options]="pieChartOptions" chartType="pie"></canvas>
+      </mat-card>
+    </div>
+  </ng-container>
 </div>
